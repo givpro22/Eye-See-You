@@ -46,10 +46,10 @@ const SplashScreen: FC = () => {
           return false;
         }
       }
-      resetAndNavigate('BottomTab'); // token access 시 Main 화면
+      navigate('TestScreen'); // token access 시 Main 화면
       return true;
     }
-    resetAndNavigate('LoginScreen'); // token deny 시 LoginScreen 
+    resetAndNavigate('TestScreen'); // token deny 시 LoginScreen 
 
   };
 
@@ -92,14 +92,3 @@ const styles = StyleSheet.create({
 });
 
 export default SplashScreen;
-
-
-/*
-
-1. token check 
-- ok -> BottomTab navigate
-- fail -> LoginScreen
-
-2. Spalsh Animation 
-
-*/

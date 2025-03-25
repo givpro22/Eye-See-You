@@ -1,6 +1,7 @@
 // ++ New Screen 
 import SplashScreen from "../screens/auth/SplashSceen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import TestScreen from "../screens/auth/TestScreen";
 
 // ++ Screen Type ??
 
@@ -13,6 +14,10 @@ export const authStack = [
     {
         name: 'LoginScreen',
         component: LoginScreen,
+    },
+    {
+        name: 'TestScreen',
+        component: TestScreen,
     }
 ];
 
