@@ -31,7 +31,7 @@ const SplashScreen: FC = () => {
       const currentTime = Date.now() / 1000;
 
       if (decodedRefreshToken?.exp < currentTime) {
-        resetAndNavigate('LoginScreen'); // token expired -> LoginScreen 
+        resetAndNavigate('HomeScreen'); // token expired -> LoginScreen 
         Alert.alert('Session Expired, please login again');
         return false;
       }
@@ -46,10 +46,10 @@ const SplashScreen: FC = () => {
           return false;
         }
       }
-      navigate('TestScreen'); // token access 시 Main 화면
+      navigate('HomeScreen'); // token access 시 Main 화면
       return true;
     }
-    resetAndNavigate('TestScreen'); // token deny 시 LoginScreen 
+    resetAndNavigate('HomeScreen'); // token deny 시 LoginScreen 
 
   };
 

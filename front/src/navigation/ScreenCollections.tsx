@@ -2,6 +2,8 @@
 import SplashScreen from "../screens/auth/SplashSceen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import TestScreen from "../screens/auth/TestScreen";
+import HomeScreen from "../screens/dash/HomeScreen";
+import AllMenuScreen from "../screens/dash/AllMenuScreen";
 
 // ++ Screen Type ??
 
@@ -18,7 +20,16 @@ export const authStack = [
     {
         name: 'TestScreen',
         component: TestScreen,
-    }
+    },
+    {
+        name: 'HomeScreen',
+        component: HomeScreen,
+    },
+    
+    {
+        name: 'AllMenuScreen',
+        component: AllMenuScreen,
+    },
 ];
 
 export const dashboardStack = [
