@@ -1,82 +1,176 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { Camera, CameraDevice, PhotoFile, CameraCaptureError } from 'react-native-vision-camera';
+import React, {useEffect, useState, useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+  Text,
+  Linking,
+  Image,
+} from 'react-native';
+import {Camera,  useCameraDevice,  useCameraDevices} from 'react-native-vision-camera';
 
 function TestScreen() {
-  const [hasPermission, setHasPermission] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
-  const [device, setDevice] = useState<CameraDevice | undefined>(undefined);
-  const cameraRef = useRef<Camera>(null);
+  const [cameraPosition, setCameraPosition] = useState('back')
+  const [showCamera, setShowCamera] = useState(true);
+  const [imageSource, setImageSource] = useState('');
+
+  const devices = useCameraDevice(cameraPosition);
+  const camera = useRef(null);
 
   useEffect(() => {
-    const prepare = async () => {
-      const status = await Camera.requestCameraPermission();
-      if (status === 'authorized') {
-        setHasPermission(true);
-        const devices = await Camera.getAvailableCameraDevices();
-        const back = devices.find(d => d.position === 'back');
-        setDevice(back);
-      }
-    };
-    prepare();
+    async function getPermission() {
+      const newCameraPermission = await Camera.requestCameraPermission();
+      console.log(newCameraPermission);
+    }
+    getPermission();
   }, []);
 
-
-  const takePhoto = async () => {
-    if (cameraRef.current == null) return;
-    try {
-      const photo: PhotoFile = await cameraRef.current.takePhoto({
-        flash: 'off',
-      });
-      console.log('Photo captured:', photo.path);
-    } catch (e) {
-      console.error('Failed to take photo:', e);
+  const capturePhoto = async () => {
+    if (camera.current !== null) {
+      const photo = await camera.current.takePhoto({});
+      setImageSource(photo.path);
+      setShowCamera(false);
+      console.log(photo.path);
     }
   };
 
+  if (devices == null) {
+    return <Text>Camera not available</Text>;
+  }
+
   return (
     <View style={styles.container}>
-      <Button
-        title={showCamera ? "카메라 숨기기" : "카메라 보기"}
-        onPress={() => setShowCamera(prev => !prev)}
-      />
-      {showCamera && (
-        <Camera
-          ref={cameraRef}
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive={showCamera}
-          photo={true}
-        />
-      )}
-      {showCamera && (
-        <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
-          <Text style={styles.captureText}>📸</Text>
-        </TouchableOpacity>
+      {showCamera ? (
+        <>
+          <Camera
+            ref={camera}
+            style={StyleSheet.absoluteFill}
+            device={devices}
+            isActive={showCamera}
+            photo={true}
+          />
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.camButton}
+              onPress={() => capturePhoto()}
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          {imageSource !== '' ? (
+            <Image
+              style={styles.image}
+              source={{
+                uri: `file://'${imageSource}`,
+              }}
+            />
+          ) : null}
+
+          <View style={styles.backButton}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                padding: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+                borderWidth: 2,
+                borderColor: '#fff',
+                width: 100,
+              }}
+              onPress={() => setShowCamera(true)}>
+              <Text style={{color: 'white', fontWeight: '500'}}>Back</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer}>
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#fff',
+                  padding: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: '#77c3ec',
+                }}
+                onPress={() => setShowCamera(true)}>
+                <Text style={{color: '#77c3ec', fontWeight: '500'}}>
+                  Retake
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#77c3ec',
+                  padding: 10,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: 'white',
+                }}
+                onPress={() => setShowCamera(true)}>
+                <Text style={{color: 'white', fontWeight: '500'}}>
+                  Use Photo
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
       )}
     </View>
   );
 }
 
 export default TestScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  captureButton: {
-    position: 'absolute',
-    bottom: 50,
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    borderRadius: 35,
-    width: 70,
-    height: 70,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
   },
-  captureText: {
-    fontSize: 30,
+  button: {
+    backgroundColor: 'gray',
+  },
+  backButton: {
+    backgroundColor: 'rgba(0,0,0,0.0)',
+    position: 'absolute',
+    justifyContent: 'center',
+    width: '100%',
+    top: 0,
+    padding: 20,
+  },
+  buttonContainer: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    bottom: 0,
+    padding: 20,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  camButton: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    //ADD backgroundColor COLOR GREY
+    backgroundColor: '#B2BEB5',
+
+    alignSelf: 'center',
+    borderWidth: 4,
+    borderColor: 'white',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    aspectRatio: 9 / 16,
   },
 });

@@ -10,7 +10,7 @@
   <!-- END OPTIONAL PERMISSIONS -->
   <!-- 카메라 권한 -->
   <uses-permission android:name="android.permission.CAMERA" />
-
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <!-- 마이크 권한 -->
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
